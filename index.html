@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+    <title>Neighborhood Map</title>
+</head>
+<body>
+    <!-- About filter from http://www.knockmeout.net/2011/04/utility-functions-in-knockoutjs.html -->
+    <input data-bind="value: filter, valueUpdate: 'afterkeydown'">
+    <p>filter <span data-bind="text: filter"></span></p>
+    <ul data-bind="foreach: filteredItems()">
+        <li data-bind="text: title"></li>
+    </ul>
+
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
+    <script type="text/javascript" src="script.js"></script></body>
+</html>
