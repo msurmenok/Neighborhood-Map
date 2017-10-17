@@ -9,6 +9,21 @@ var places = [
         title: 'Bair Island Ecological Reserve',
         lat: 37.520700,
         lng: -122.225591
+    },
+    {
+        title: 'Whole Foods',
+        lat: 37.482368,
+        lng: -122.231693
+    },
+    {
+        title: 'Redwood Downtown 20 and XD',
+        lat: 37.486213,
+        lng: -122.228881
+    },
+    {
+        title: 'Blu Harbor',
+        lat: 37.499957,
+        lng: -122.223999
     }
 ];
 
