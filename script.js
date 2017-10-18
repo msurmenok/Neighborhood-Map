@@ -46,7 +46,28 @@ var places = [
 var map;
 var markers = [];
 
+var pinIcon;
+var pinIconChosen;
+
+
 function initMap() {
+    pinIcon = new google.maps.MarkerImage(
+        "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|ff9008",
+        null, /* size is determined at runtime */
+        null, /* origin is 0,0 */
+        null, /* anchor is bottom center of the scaled image */
+        new google.maps.Size(25,41)
+    );
+
+    pinIconChosen = new google.maps.MarkerImage(
+        "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|ff3f35",
+        null, /* size is determined at runtime */
+        null, /* origin is 0,0 */
+        null, /* anchor is bottom center of the scaled image */
+        new google.maps.Size(28,44)
+    );
+
+
     map = new google.maps.Map(document.querySelector('#map'), {
         center: {lat: 37.4986064, lng: -122.229146},
         zoom: 13
@@ -60,11 +81,21 @@ function createMarkers(places) {
         var marker = new google.maps.Marker({
             position: {lat: places[i].lat, lng: places[i].lng},
             map: map,
-            title: places[i].title
+            title: places[i].title,
+            icon: pinIcon
         });
+        marker.addListener('mouseover', function () {
+            this.setIcon(pinIconChosen);
+        });
+        marker.addListener('mouseout', function () {
+            this.setIcon(pinIcon);
+        })
         markers.push(marker);
     }
 }
+
+
+
 
 function removeMarkers() {
     for(var i = 0; i < markers.length; i++) {
@@ -94,6 +125,24 @@ function AppViewModel() {
     this.filteredItems.subscribe(function(filteredPlaces) {
         createMarkers(filteredPlaces);
     });
+
+
+    // Hover over markers
+    this.goOverMarker = function (text) {
+        for(var i = 0; i < markers.length; i++) {
+            if(text.title == markers[i].title) {
+                google.maps.event.trigger(markers[i], 'mouseover');
+            }
+        }
+    }
+
+    this.goOutMarker = function (text) {
+        for(var i = 0; i < markers.length; i++) {
+            if(text.title == markers[i].title) {
+                google.maps.event.trigger(markers[i], 'mouseout');
+            }
+        }
+    }
 }
 
 

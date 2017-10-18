@@ -12,10 +12,10 @@
     <div class="container-fluid">
         <div class="row"> <!-- add navbar later -->
             <div class="col-md-4">
-                <input data-bind="value: filter, valueUpdate: 'afterkeydown'">
+                <input data-bind="value: filter, valueUpdate: 'afterkeydown'" placeholder="Filter">
                 <p>filter <span data-bind="text: filter"></span></p>
                 <ul data-bind="foreach: filteredItems">
-                    <li data-bind="text: title"></li>
+                    <li data-bind="text: title, event: {mouseover: $parent.goOverMarker, mouseout: $parent.goOutMarker}"></li>
                 </ul>
             </div>
             <div class="col-md-8">
