@@ -55,34 +55,45 @@ function initMap() {
 }
 
 function createMarkers(places) {
+    removeMarkers();
     for(var i = 0; i < places.length; i++) {
         var marker = new google.maps.Marker({
             position: {lat: places[i].lat, lng: places[i].lng},
             map: map,
             title: places[i].title
         });
+        markers.push(marker);
     }
+}
+
+function removeMarkers() {
+    for(var i = 0; i < markers.length; i++) {
+        markers[i].setMap(null);
+    }
+    markers = [];
 }
 
 // Knockout JS
 function AppViewModel() {
-    this.items = ko.observableArray(places);
     this.filter = ko.observable("");
 
-    this.filteredItems = function () {
+    this.filteredItems = ko.computed(function () {
         var filter = this.filter().toLowerCase();
         if (!filter) {
-            return ko.observableArray(places);
+            return places;
         } else {
-            var filtered_places = places.filter(function(place) {
+            var filteredPlaces = places.filter(function(place) {
                var title = place.title.toLowerCase();
                return title.indexOf(filter) !== -1;
             });
-            console.log(filtered_places);
-            return ko.observableArray(filtered_places);
-        }
 
-    }
+            return filteredPlaces;
+        }
+    }, this);
+
+    this.filteredItems.subscribe(function(filteredPlaces) {
+        createMarkers(filteredPlaces);
+    });
 }
 
 
