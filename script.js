@@ -119,6 +119,11 @@ function populateInfoWindow(marker, infowindow) {
             infowindow.marker = null;
             markAsUnchosen(currentMarker);
         });
+    } else if (infowindow.marker == marker) {
+        var currentMarker = infowindow.marker;
+        infowindow.marker = null;
+        markAsUnchosen(currentMarker);
+        infowindow.close();
     }
 }
 
