@@ -96,7 +96,7 @@ function createMarkers(places) {
             return markAsUnchosen(this)
         });
         marker.addListener('click', function () {
-           return populateInfoWindow(this, infowindow);
+            return populateInfoWindow(this, infowindow);
         });
         markers.push(marker);
     }
@@ -106,12 +106,18 @@ function createMarkers(places) {
 // Populate infowindow for specific marker
 // Only one infowindow at a time
 function populateInfoWindow(marker, infowindow) {
+
     if(infowindow.marker != marker) {
+        infowindow.marker = null;
+        markers.forEach(function (t) { markAsUnchosen(t); });
+        markAsChosen(marker);
         infowindow.marker = marker;
-        infowindow.setContent('<h1>' + marker.title + '</h1>');
+        infowindow.setContent('<span>' + marker.title + '</span>');
         infowindow.open(map, marker)
-        infowindow.addListener('closeClick', function () {
+        infowindow.addListener('closeclick', function () {
+            var currentMarker = infowindow.marker;
             infowindow.marker = null;
+            markAsUnchosen(currentMarker);
         });
     }
 }
@@ -123,7 +129,9 @@ function markAsChosen(marker) {
 
 // Set icon when mouse out of a marker
 function markAsUnchosen(marker) {
-    marker.setIcon(pinIcon);
+    if(infowindow.marker !== marker) {
+        marker.setIcon(pinIcon);
+    }
 }
 
 
