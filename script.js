@@ -178,6 +178,11 @@ function AppViewModel() {
         var marker = findMarkerByTitle(text.title);
         markAsUnchosen(marker);
     }
+
+    this.clickMarker = function(text) {
+        var marker = findMarkerByTitle(text.title);
+        populateInfoWindow(marker, infowindow);
+    }
 }
 
 
