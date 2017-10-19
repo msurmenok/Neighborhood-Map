@@ -75,6 +75,7 @@ function initMap() {
     createMarkers(places);
 }
 
+// Create markers for specified places
 function createMarkers(places) {
     removeMarkers();
     for(var i = 0; i < places.length; i++) {
@@ -84,24 +85,43 @@ function createMarkers(places) {
             title: places[i].title,
             icon: pinIcon
         });
-        marker.addListener('mouseover', function () {
-            this.setIcon(pinIconChosen);
+        marker.addListener('mouseover', function() {
+            return markAsChosen(this)
         });
-        marker.addListener('mouseout', function () {
-            this.setIcon(pinIcon);
-        })
+        marker.addListener('mouseout', function() {
+            return markAsUnchosen(this)
+        });
         markers.push(marker);
     }
 }
 
+// Set icon when mouse over a marker
+function markAsChosen(marker) {
+    marker.setIcon(pinIconChosen);
+}
+
+// Set icon when mouse out of a marker
+function markAsUnchosen(marker) {
+    marker.setIcon(pinIcon);
+}
 
 
-
+// Remove all markers from the map and clear the array
 function removeMarkers() {
     for(var i = 0; i < markers.length; i++) {
         markers[i].setMap(null);
     }
     markers = [];
+}
+
+// Return marker with specific title
+function findMarkerByTitle(title) {
+    for(var i = 0; i < markers.length; i++) {
+        if(title == markers[i].title) {
+            return markers[i];
+        }
+    }
+    return null;
 }
 
 // Knockout JS
@@ -129,19 +149,13 @@ function AppViewModel() {
 
     // Hover over markers
     this.goOverMarker = function (text) {
-        for(var i = 0; i < markers.length; i++) {
-            if(text.title == markers[i].title) {
-                google.maps.event.trigger(markers[i], 'mouseover');
-            }
-        }
+        var marker = findMarkerByTitle(text.title);
+        markAsChosen(marker);
     }
 
     this.goOutMarker = function (text) {
-        for(var i = 0; i < markers.length; i++) {
-            if(text.title == markers[i].title) {
-                google.maps.event.trigger(markers[i], 'mouseout');
-            }
-        }
+        var marker = findMarkerByTitle(text.title);
+        markAsUnchosen(marker);
     }
 }
 
