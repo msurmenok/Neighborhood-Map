@@ -45,6 +45,7 @@ var places = [
 // Google Map
 var map;
 var markers = [];
+var infowindow;
 
 var pinIcon;
 var pinIconChosen;
@@ -72,6 +73,9 @@ function initMap() {
         center: {lat: 37.4986064, lng: -122.229146},
         zoom: 13
     });
+
+    infowindow = new google.maps.InfoWindow();
+
     createMarkers(places);
 }
 
@@ -91,7 +95,24 @@ function createMarkers(places) {
         marker.addListener('mouseout', function() {
             return markAsUnchosen(this)
         });
+        marker.addListener('click', function () {
+           return populateInfoWindow(this, infowindow);
+        });
         markers.push(marker);
+    }
+}
+
+
+// Populate infowindow for specific marker
+// Only one infowindow at a time
+function populateInfoWindow(marker, infowindow) {
+    if(infowindow.marker != marker) {
+        infowindow.marker = marker;
+        infowindow.setContent('<h1>' + marker.title + '</h1>');
+        infowindow.open(map, marker)
+        infowindow.addListener('closeClick', function () {
+            infowindow.marker = null;
+        });
     }
 }
 
