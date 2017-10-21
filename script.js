@@ -142,8 +142,33 @@ function populateInfoWindow(marker, infowindow) {
         infowindow.marker = null;
         markers.forEach(function (t) { markAsUnchosen(t); });
         markAsChosen(marker);
+        infowindow.setContent('');
         infowindow.marker = marker;
-        infowindow.setContent('<span>' + marker.title + '</span>');
+        // Street view
+        var streetViewService = new google.maps.StreetViewService();
+
+        function getStreetView(data, status) {
+            if(status === 'OK') {
+                var nearStreetViewLocation = data.location.latLng;
+                var heading = google.maps.geometry.spherical.computeHeading(
+                    nearStreetViewLocation, marker.position
+                );
+                infowindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>');
+                var panoramaOptions = {
+                    position: nearStreetViewLocation,
+                    pov: {
+                        heading: heading,
+                        pitch: 10
+                    }
+                };
+                var panorama = new google.maps.StreetViewPanorama(document.querySelector('#pano'), panoramaOptions);
+            } else {
+                infowindow.setContent('<div>' + marker.title + '</div><div>No Street View Found</div>');
+            }
+        }
+
+        streetViewService.getPanoramaByLocation(marker.position, 50, getStreetView);
+
         infowindow.open(map, marker)
         infowindow.addListener('closeclick', function () {
             var currentMarker = infowindow.marker;
@@ -157,6 +182,8 @@ function populateInfoWindow(marker, infowindow) {
         infowindow.close();
     }
 }
+
+
 
 // Set icon when mouse over a marker
 function markAsChosen(marker) {
