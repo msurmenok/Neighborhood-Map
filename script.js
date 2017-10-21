@@ -2,43 +2,74 @@
 var places = [
     {
         title: 'County History Museum',
-        lat: 37.487017,
-        lng:  -122.229660
+        location: {
+           lat: 37.487017,
+            lng:  -122.229660
+        }
+
     },
     {
         title: 'Bair Island Ecological Reserve',
-        lat: 37.520700,
-        lng: -122.225591
+        location: {
+            lat: 37.520700,
+            lng: -122.225591
+        }
+
     },
     {
         title: 'Whole Foods',
-        lat: 37.482368,
-        lng: -122.231693
+        location: {
+            lat: 37.482368,
+            lng: -122.231693
+        }
+
     },
     {
         title: 'Redwood Downtown 20 and XD',
-        lat: 37.486213,
-        lng: -122.228881
+        location: {
+            lat: 37.486213,
+            lng: -122.228881
+        }
+
     },
     {
         title: 'Blu Harbor',
-        lat: 37.499957,
-        lng: -122.223999
+        location: {
+            lat: 37.499957,
+            lng: -122.223999
+        }
+
     },
     {
         title: 'Redwood City DMV',
-        lat: 37.492581,
-        lng: -122.229020
+        location: {
+            lat: 37.492581,
+            lng: -122.229020
+        }
+
     },
     {
         title: 'Trader Joe\'s',
-        lat: 37.496354,
-        lng: -122.248546
+        location: {
+            lat: 37.496354,
+            lng: -122.248546
+        }
+
     },
     {
         title: 'Costco',
-        lat: 37.478404,
-        lng: -122.216502
+        location: {
+            lat: 37.478404,
+            lng: -122.216502
+        }
+
+    },
+    {
+        title: 'Petco Animal Supplies',
+        location: {
+            lat: 37.470584,
+            lng: -122.223852
+        }
     }
 ];
 
@@ -84,7 +115,7 @@ function createMarkers(places) {
     removeMarkers();
     for(var i = 0; i < places.length; i++) {
         var marker = new google.maps.Marker({
-            position: {lat: places[i].lat, lng: places[i].lng},
+            position: places[i].location,
             map: map,
             title: places[i].title,
             icon: pinIcon
