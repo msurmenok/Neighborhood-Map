@@ -113,6 +113,7 @@ function initMap() {
 // Create markers for specified places
 function createMarkers(places) {
     removeMarkers();
+    var bounds = new google.maps.LatLngBounds();
     for(var i = 0; i < places.length; i++) {
         var marker = new google.maps.Marker({
             position: places[i].location,
@@ -130,7 +131,9 @@ function createMarkers(places) {
             return populateInfoWindow(this, infowindow);
         });
         markers.push(marker);
+        bounds.extend(marker.position);
     }
+    map.fitBounds(bounds);
 }
 
 
