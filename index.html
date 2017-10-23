@@ -11,23 +11,26 @@
 <body>
     <div class="container-fluid">
         <div class="row"> <!-- add navbar later -->
-            <div class="col-md-4">
+            <div class="col-lg-4 col-md-12 col-sm-12">
+
                 <nav class="navbar navbar-expand-lg navbar-light bg-light">
+
                     <form class="form-inline">
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
                         <input data-bind="value: filter, valueUpdate: 'afterkeydown'" placeholder="Filter places">
                     </form>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
+
+
                     <div class="collapse navbar-collapse" id="navbarNav">
-                        <p>filter <span data-bind="text: filter"></span></p>
                         <ul class="navbar-nav" data-bind="foreach: filteredItems">
                             <li data-bind="text: title, event: {mouseover: $parent.goOverMarker, mouseout: $parent.goOutMarker, click: $parent.clickMarker}"></li>
                         </ul>
                     </div>
                 </nav>
             </div>
-            <div class="col-md-8">
+            <div class="col-lg-8 col-md-12 col-sm-12">
                 <div id="map"></div>
             </div>
         </div>
