@@ -20,3 +20,20 @@ html, body {
     flex-wrap: wrap;
 }
 
+.form-inline {
+    flex-wrap: nowrap;
+}
+
+.navbar-toggler {
+    margin: 0 20px 0 0;
+}
+
+ul li {
+    padding: 10px 0 5px 10px;
+    margin: 5px 0 0 0;
+    cursor: pointer;
+}
+
+ul li:hover {
+    background-color: gainsboro;
+}
