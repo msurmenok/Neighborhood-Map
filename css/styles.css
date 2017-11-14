@@ -37,3 +37,7 @@ ul li {
 ul li:hover {
     background-color: gainsboro;
 }
+
+.wiki-info {
+    max-width: 300px;
+}

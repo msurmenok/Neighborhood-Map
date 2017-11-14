@@ -83,6 +83,10 @@ var infowindow;
 var pinIcon;
 var pinIconChosen;
 
+// Wikipedia
+//var wikiUrl;
+
+
 
 function initMap() {
     pinIcon = new google.maps.MarkerImage(
@@ -111,8 +115,6 @@ function initMap() {
 
     createMarkers(places);
 }
-
-// (a, b) => {return (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0);})
 
 // Create markers for specified places
 function createMarkers(places) {
@@ -160,7 +162,7 @@ function populateInfoWindow(marker, infowindow) {
                 var heading = google.maps.geometry.spherical.computeHeading(
                     nearStreetViewLocation, marker.position
                 );
-                infowindow.setContent('<h4>' + marker.title + '</h4><div id="pano"></div>');
+                infowindow.setContent('<h5>' + marker.title + '</h5><div class="wiki-info"></div><div id="pano"></div>');
                 var panoramaOptions = {
                     position: nearStreetViewLocation,
                     pov: {
@@ -170,9 +172,36 @@ function populateInfoWindow(marker, infowindow) {
                 };
                 var panorama = new google.maps.StreetViewPanorama(document.querySelector('#pano'), panoramaOptions);
             } else {
-                infowindow.setContent('<div>' + marker.title + '</div><div>No Street View Found</div>');
+                infowindow.setContent('<h5>' + marker.title + '</h5><div class="wiki-info"></div><div>No Street View Found</div>');
             }
         }
+
+        // Add wikipedia article
+        var wikiUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=' + marker.title + '&callback=wikiCallback';
+        $.ajax({
+            url: wikiUrl,
+            dataType: 'jsonp',
+            success: function(data) {
+                //console.log("Success");
+                var articles = data[1];
+                var preview = data[2];
+                console.log(data);
+                var wikiElem = document.querySelector('.wiki-info');
+                if(preview[0].indexOf('may refer to') == -1) {
+                    wikiElem.innerHTML += '<p>' + preview[0] + '</p>';
+                } else {
+                    wikiElem.innerHTML += '<p>' + preview[1].substring(0, 200) + '...</p>';
+                }
+
+                for (var i = 0; i < articles.length && i < 3; i++) {
+                    var url = 'http://en.wikipedia.org/wiki/'+ articles[i];
+                    //console.log(encodeURI(url));
+                    //console.log(wikiElem);
+                    wikiElem.innerHTML += '<a href="' + url + '">'+ articles[i] + '</a><br>';
+
+                }
+            }
+        });
 
         streetViewService.getPanoramaByLocation(marker.position, 50, getStreetView);
 
@@ -191,11 +220,11 @@ function populateInfoWindow(marker, infowindow) {
 }
 
 
-
 // Set icon when mouse over a marker
 function markAsChosen(marker) {
     marker.setIcon(pinIconChosen);
 }
+
 
 // Set icon when mouse out of a marker
 function markAsUnchosen(marker) {
@@ -213,6 +242,7 @@ function removeMarkers() {
     markers = [];
 }
 
+
 // Return marker with specific title
 function findMarkerByTitle(title) {
     for(var i = 0; i < markers.length; i++) {
@@ -222,6 +252,7 @@ function findMarkerByTitle(title) {
     }
     return null;
 }
+
 
 // Knockout JS
 function AppViewModel() {
