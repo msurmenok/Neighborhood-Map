@@ -1,77 +1,79 @@
 // Array of places in Redwood City, CA
 var places = [
     {
-        title: 'County History Museum',
+        title: 'Palace Of Fine Arts',
         location: {
-           lat: 37.487017,
-            lng:  -122.229660
+           lat: 37.801990,
+            lng: -122.448658
         }
 
     },
     {
-        title: 'Bair Island Ecological Reserve',
+        title: 'Japanese Tea Garden',
         location: {
-            lat: 37.520700,
-            lng: -122.225591
+            lat: 37.770084,
+            lng: -122.470430
         }
 
     },
     {
-        title: 'Whole Foods',
+        title: 'Sutro Baths',
         location: {
-            lat: 37.482368,
-            lng: -122.231693
+            lat: 37.780425,
+            lng: -122.513658
         }
 
     },
     {
-        title: 'Redwood Downtown 20 and XD',
+        title: 'San Mateo County History Museum',
         location: {
-            lat: 37.486213,
-            lng: -122.228881
+            lat: 37.486985,
+            lng: -122.229644
         }
 
     },
     {
-        title: 'Blu Harbor',
+        title: 'Bair Island Wildlife Refuge & Trail',
         location: {
-            lat: 37.499957,
-            lng: -122.223999
+            lat: 37.498916,
+            lng: -122.224590
         }
 
     },
     {
-        title: 'Redwood City DMV',
+        title: 'Computer History Museum',
         location: {
-            lat: 37.492581,
-            lng: -122.229020
+            lat: 37.414300,
+            lng: -122.077452
         }
 
     },
     {
-        title: 'Trader Joe\'s',
+        title: 'Dragon\'s Gate',
         location: {
-            lat: 37.496354,
-            lng: -122.248546
+            lat: 37.790695,
+            lng: -122.405613
         }
 
     },
     {
-        title: 'Costco',
+        title: 'Stanford University',
         location: {
-            lat: 37.478404,
-            lng: -122.216502
+            lat: 37.427416,
+            lng: -122.169822
         }
 
     },
     {
-        title: 'Petco Animal Supplies',
+        title: 'Pacifica Municipal Pier',
         location: {
-            lat: 37.470584,
-            lng: -122.223852
+            lat: 37.633394,
+            lng: -122.496260
         }
     }
 ];
+
+places = places.sort(function(a,b) {return (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0);});
 
 // Google Map
 var map;
@@ -101,7 +103,7 @@ function initMap() {
 
 
     map = new google.maps.Map(document.querySelector('#map'), {
-        center: {lat: 37.4986064, lng: -122.229146},
+        center: places[0].location,
         zoom: 13
     });
 
@@ -109,6 +111,8 @@ function initMap() {
 
     createMarkers(places);
 }
+
+// (a, b) => {return (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0);})
 
 // Create markers for specified places
 function createMarkers(places) {
@@ -156,7 +160,7 @@ function populateInfoWindow(marker, infowindow) {
                 var heading = google.maps.geometry.spherical.computeHeading(
                     nearStreetViewLocation, marker.position
                 );
-                infowindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>');
+                infowindow.setContent('<h4>' + marker.title + '</h4><div id="pano"></div>');
                 var panoramaOptions = {
                     position: nearStreetViewLocation,
                     pov: {
