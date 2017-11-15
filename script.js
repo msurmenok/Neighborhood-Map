@@ -184,22 +184,73 @@ function populateInfoWindow(marker, infowindow) {
             success: function(data) {
                 //console.log("Success");
                 var articles = data[1];
-                var preview = data[2];
-                console.log(data);
-                var wikiElem = document.querySelector('.wiki-info');
-                if(preview[0].indexOf('may refer to') == -1) {
-                    wikiElem.innerHTML += '<p>' + preview[0] + '</p>';
+                var information  = data[2];
+                var preview;
+
+                var wikiElem = document.createElement('div');
+                var wikiInfo = document.querySelector('.wiki-info');
+
+                var teaserInfo = document.createElement('p');
+                teaserInfo.className = 'teaser';
+                var completeInfo = document.createElement('div');
+                completeInfo.className = 'complete';
+
+                // Add controls to show and hide complete information.
+                var showComplete = document.createElement('a');
+                showComplete.innerHTML = 'more';
+                showComplete.setAttribute('href', '#');
+                var hideComplete = document.createElement('a');
+                hideComplete.innerHTML = 'less';
+                hideComplete.setAttribute('href', '#');
+
+                // Add teaser
+                if(information[0].indexOf(('may refer to')) == -1) {
+                    teaserInfo.innerHTML += information[0].substring(0, 40) + '... ';
                 } else {
-                    wikiElem.innerHTML += '<p>' + preview[1].substring(0, 200) + '...</p>';
+                    teaserInfo.innerHTML += information[1].substring(0, 42) + '... ';
+                }
+                teaserInfo.appendChild(showComplete);
+
+                // Add complete text and links
+                for(var i = 0; i < information.length && i < 3; i++) {
+                    if(information[i].indexOf('may refer to') != -1) {
+                        continue;
+                    } else {
+                        completeInfo.innerHTML += '<p>' + information [i] + '</p>';
+                    }
                 }
 
+
+                completeInfo.innerHTML += '<strong>Wikipedia links:</strong><br>';
                 for (var i = 0; i < articles.length && i < 3; i++) {
                     var url = 'http://en.wikipedia.org/wiki/'+ articles[i];
                     //console.log(encodeURI(url));
                     //console.log(wikiElem);
-                    wikiElem.innerHTML += '<a href="' + url + '">'+ articles[i] + '</a><br>';
+                    completeInfo.innerHTML += '<a href="' + url + '">'+ articles[i] + '</a><br>';
 
                 }
+                completeInfo.innerHTML += '<br>';
+
+                completeInfo.appendChild(hideComplete);
+
+
+                // Hide and show complete information from Wikipedia
+                showComplete.addEventListener('click', function () {
+                    teaserInfo.style.display = 'none';
+                    completeInfo.style.display = 'block';
+                });
+
+                hideComplete.addEventListener('click', function () {
+                    console.log('im here');
+                    teaserInfo.style.display = 'block';
+                    completeInfo.style.display = 'none';
+                });
+
+
+                completeInfo.style.display = 'none';
+                wikiElem.append(teaserInfo);
+                wikiElem.append(completeInfo);
+                wikiInfo.append(wikiElem);
             }
         });
 
