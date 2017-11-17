@@ -176,13 +176,12 @@ function populateInfoWindow(marker, infowindow) {
             }
         }
 
-        // Add wikipedia article
+        // Add information from Wikipedia
         var wikiUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=' + marker.title + '&callback=wikiCallback';
         $.ajax({
             url: wikiUrl,
             dataType: 'jsonp',
             success: function(data) {
-                //console.log("Success");
                 var articles = data[1];
                 var information  = data[2];
                 var preview;
@@ -195,7 +194,7 @@ function populateInfoWindow(marker, infowindow) {
                 var completeInfo = document.createElement('div');
                 completeInfo.className = 'complete';
 
-                // Add controls to show and hide complete information.
+                // Add controls to show and hide complete information
                 var showComplete = document.createElement('a');
                 showComplete.innerHTML = 'more';
                 showComplete.setAttribute('href', '#');
@@ -203,15 +202,15 @@ function populateInfoWindow(marker, infowindow) {
                 hideComplete.innerHTML = 'less';
                 hideComplete.setAttribute('href', '#');
 
-                // Add teaser
-                if(information[0].indexOf(('may refer to')) == -1) {
+                // Add information preview
+                if(information.length > 0 && information[0].indexOf(('may refer to')) == -1) {
                     teaserInfo.innerHTML += information[0].substring(0, 40) + '... ';
                 } else {
                     teaserInfo.innerHTML += information[1].substring(0, 42) + '... ';
                 }
                 teaserInfo.appendChild(showComplete);
 
-                // Add complete text and links
+                // Add complete information about the place: text and links
                 for(var i = 0; i < information.length && i < 3; i++) {
                     if(information[i].indexOf('may refer to') != -1) {
                         continue;
@@ -220,12 +219,9 @@ function populateInfoWindow(marker, infowindow) {
                     }
                 }
 
-
                 completeInfo.innerHTML += '<strong>Wikipedia links:</strong><br>';
                 for (var i = 0; i < articles.length && i < 3; i++) {
                     var url = 'http://en.wikipedia.org/wiki/'+ articles[i];
-                    //console.log(encodeURI(url));
-                    //console.log(wikiElem);
                     completeInfo.innerHTML += '<a href="' + url + '">'+ articles[i] + '</a><br>';
 
                 }
@@ -241,7 +237,6 @@ function populateInfoWindow(marker, infowindow) {
                 });
 
                 hideComplete.addEventListener('click', function () {
-                    console.log('im here');
                     teaserInfo.style.display = 'block';
                     completeInfo.style.display = 'none';
                 });
