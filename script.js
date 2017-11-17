@@ -79,6 +79,7 @@ places = places.sort(function(a,b) {return (a.title > b.title) ? 1 : ((b.title >
 var map;
 var markers = [];
 var infowindow;
+var chosenMarker;
 
 var pinIcon;
 var pinIconChosen;
@@ -127,26 +128,34 @@ function createMarkers(places) {
             title: places[i].title,
             icon: pinIcon
         });
-        marker.addListener('mouseover', function() {
-            return markAsChosen(this)
-        });
-        marker.addListener('mouseout', function() {
-            return markAsUnchosen(this)
-        });
-        marker.addListener('click', function () {
-            return populateInfoWindow(this, infowindow);
-        });
+        marker.addListener('mouseover', wrapMarkAsChosen);
+        marker.addListener('mouseout', wrapMarkAsUnchosen);
+        marker.addListener('click', wrapPopulateInfoWindow);
         markers.push(marker);
         bounds.extend(marker.position);
     }
     map.fitBounds(bounds);
 }
 
+// Wrap functions
+function wrapMarkAsChosen() {
+    return markAsChosen(this);
+}
+
+function wrapMarkAsUnchosen() {
+    return markAsUnchosen(this);
+}
+
+function wrapPopulateInfoWindow() {
+    return populateInfoWindow(this, infowindow);
+}
 
 // Populate infowindow for specific marker
 // Only one infowindow at a time
-function populateInfoWindow(marker, infowindow) {
 
+
+function populateInfoWindow(marker, infowindow) {
+    chosenMarker = marker;
     if(infowindow.marker != marker) {
         infowindow.marker = null;
         markers.forEach(function (t) { markAsUnchosen(t); });
@@ -156,25 +165,7 @@ function populateInfoWindow(marker, infowindow) {
         // Street view
         var streetViewService = new google.maps.StreetViewService();
 
-        function getStreetView(data, status) {
-            if(status === 'OK') {
-                var nearStreetViewLocation = data.location.latLng;
-                var heading = google.maps.geometry.spherical.computeHeading(
-                    nearStreetViewLocation, marker.position
-                );
-                infowindow.setContent('<h5>' + marker.title + '</h5><div class="wiki-info"></div><div id="pano"></div>');
-                var panoramaOptions = {
-                    position: nearStreetViewLocation,
-                    pov: {
-                        heading: heading,
-                        pitch: 10
-                    }
-                };
-                var panorama = new google.maps.StreetViewPanorama(document.querySelector('#pano'), panoramaOptions);
-            } else {
-                infowindow.setContent('<h5>' + marker.title + '</h5><div class="wiki-info"></div><div>No Street View Found</div>');
-            }
-        }
+
 
         // Add information from Wikipedia
         var wikiUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=' + marker.title + '&callback=wikiCallback';
@@ -184,7 +175,6 @@ function populateInfoWindow(marker, infowindow) {
             success: function(data) {
                 var articles = data[1];
                 var information  = data[2];
-                var preview;
 
                 var wikiElem = document.createElement('div');
                 var wikiInfo = document.querySelector('.wiki-info');
@@ -203,12 +193,14 @@ function populateInfoWindow(marker, infowindow) {
                 hideComplete.setAttribute('href', '#');
 
                 // Add information preview
-                if(information.length > 0 && information[0].indexOf(('may refer to')) == -1) {
-                    teaserInfo.innerHTML += information[0].substring(0, 40) + '... ';
-                } else {
-                    teaserInfo.innerHTML += information[1].substring(0, 42) + '... ';
+                if(information.length > 0) {
+                    if(information[0].indexOf(('may refer to')) == -1) {
+                        teaserInfo.innerHTML += information[0].substring(0, 40) + '... ';
+                    } else {
+                        teaserInfo.innerHTML += information[1].substring(0, 42) + '... ';
+                    }
+                    teaserInfo.appendChild(showComplete);
                 }
-                teaserInfo.appendChild(showComplete);
 
                 // Add complete information about the place: text and links
                 for(var i = 0; i < information.length && i < 3; i++) {
@@ -220,9 +212,9 @@ function populateInfoWindow(marker, infowindow) {
                 }
 
                 completeInfo.innerHTML += '<strong>Wikipedia links:</strong><br>';
-                for (var i = 0; i < articles.length && i < 3; i++) {
-                    var url = 'http://en.wikipedia.org/wiki/'+ articles[i];
-                    completeInfo.innerHTML += '<a href="' + url + '">'+ articles[i] + '</a><br>';
+                for (var j = 0; j < articles.length && j < 3; j++) {
+                    var url = 'http://en.wikipedia.org/wiki/'+ articles[j];
+                    completeInfo.innerHTML += '<a href="' + url + '">'+ articles[j] + '</a><br>';
 
                 }
                 completeInfo.innerHTML += '<br>';
@@ -251,7 +243,7 @@ function populateInfoWindow(marker, infowindow) {
 
         streetViewService.getPanoramaByLocation(marker.position, 50, getStreetView);
 
-        infowindow.open(map, marker)
+        infowindow.open(map, marker);
         infowindow.addListener('closeclick', function () {
             var currentMarker = infowindow.marker;
             infowindow.marker = null;
@@ -262,6 +254,28 @@ function populateInfoWindow(marker, infowindow) {
         infowindow.marker = null;
         markAsUnchosen(currentMarker);
         infowindow.close();
+    }
+}
+
+
+// Get streetview and populate infowindow
+function getStreetView(data, status) {
+    if(status === 'OK') {
+        var nearStreetViewLocation = data.location.latLng;
+        var heading = google.maps.geometry.spherical.computeHeading(
+            nearStreetViewLocation, chosenMarker.position
+        );
+        infowindow.setContent('<h5>' + chosenMarker.title + '</h5><div class="wiki-info"></div><div id="pano"></div>');
+        var panoramaOptions = {
+            position: nearStreetViewLocation,
+            pov: {
+                heading: heading,
+                pitch: 10
+            }
+        };
+        var panorama = new google.maps.StreetViewPanorama(document.querySelector('#pano'), panoramaOptions);
+    } else {
+        infowindow.setContent('<h5>' + chosenMarker.title + '</h5><div class="wiki-info"></div><div>No Street View Found</div>');
     }
 }
 
@@ -327,17 +341,17 @@ function AppViewModel() {
     this.goOverMarker = function (text) {
         var marker = findMarkerByTitle(text.title);
         markAsChosen(marker);
-    }
+    };
 
     this.goOutMarker = function (text) {
         var marker = findMarkerByTitle(text.title);
         markAsUnchosen(marker);
-    }
+    };
 
     this.clickMarker = function(text) {
         var marker = findMarkerByTitle(text.title);
         populateInfoWindow(marker, infowindow);
-    }
+    };
 }
 
 
