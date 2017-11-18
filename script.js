@@ -143,7 +143,11 @@ function createMarkers(places) {
         bounds.extend(marker.position);
     }
     map.fitBounds(bounds);
+    google.maps.event.addDomListener(window, 'resize', function() {
+        map.fitBounds(bounds); // `bounds` is a `LatLngBounds` object
+    });
 }
+
 
 // Wrap functions
 function wrapMarkAsChosen() {

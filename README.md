@@ -8,6 +8,7 @@ Download project `git clone https://github.com/msurmenok/Neighborhood-Map.git`
 * In developer console click 'Enable APIs and Services' link and choose 'Google Maps Javascript API'
 * On the new page choose 'Enable' button and then 'Create credentials'
 * Create API key and copy it
-* In the downloaded project go to index.html and replace 'YOUR_KEY' in line 48 with your Google API key
-
+* In the downloaded project go to index.html file and replace 'YOUR_KEY' in line 48 with your Google API key
+### Run app
+Open index.html in your browser
 
