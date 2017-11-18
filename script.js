@@ -118,6 +118,13 @@ function initMap() {
     createMarkers(places);
 }
 
+
+function mapError(event) {
+    console.log('Google Maps API Error');
+    console.log(event);
+}
+
+
 // Create markers for specified places
 function createMarkers(places) {
     removeMarkers();
@@ -169,7 +176,7 @@ function populateInfoWindow(marker, infowindow) {
 
 
         // Add information from Wikipedia
-        var wikiUrl = 'https://en.wiipedia.org/w/api.php?action=opensearch&format=json&search=' + marker.title + '&callback=wikiCallback';
+        var wikiUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=' + marker.title + '&callback=wikiCallback';
         $.ajax({
             url: wikiUrl,
             dataType: 'jsonp',
@@ -180,9 +187,9 @@ function populateInfoWindow(marker, infowindow) {
                 for(var i = 0; i < titles.length && i < 3; i++) {
                     wikiInfo += '<a href=' + links[i] + '>' + titles[i] + '</a><br>';
                 }
-                wikiInfo += '</p>'
-                if(titles.length == 0) {
-                    wikiInfo = '<p>Wikipedia information is not available for the location.</p>'
+                wikiInfo += '</p>';
+                if(titles.length === 0) {
+                    wikiInfo = '<p>Wikipedia information is not available for the location.</p>';
                 }
                 streetViewService.getPanoramaByLocation(marker.position, 50, getStreetView);
             },
