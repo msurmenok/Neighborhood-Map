@@ -80,6 +80,7 @@ var map;
 var markers = [];
 var infowindow;
 var chosenMarker;
+var wikiInfo;
 
 var pinIcon;
 var pinIconChosen;
@@ -164,7 +165,7 @@ function populateInfoWindow(marker, infowindow) {
         infowindow.marker = marker;
         // Street view
         var streetViewService = new google.maps.StreetViewService();
-
+        wikiInfo = '';
 
 
         // Add information from Wikipedia
@@ -173,71 +174,17 @@ function populateInfoWindow(marker, infowindow) {
             url: wikiUrl,
             dataType: 'jsonp',
             success: function(data) {
-                var articles = data[1];
-                var information  = data[2];
-
-                var wikiElem = document.createElement('div');
-                var wikiInfo = document.querySelector('.wiki-info');
-
-                var teaserInfo = document.createElement('p');
-                teaserInfo.className = 'teaser';
-                var completeInfo = document.createElement('div');
-                completeInfo.className = 'complete';
-
-                // Add controls to show and hide complete information
-                var showComplete = document.createElement('a');
-                showComplete.innerHTML = 'more';
-                showComplete.setAttribute('href', '#');
-                var hideComplete = document.createElement('a');
-                hideComplete.innerHTML = 'less';
-                hideComplete.setAttribute('href', '#');
-
-                // Add information preview
-                if(information.length > 0) {
-                    if(information[0].indexOf(('may refer to')) == -1) {
-                        teaserInfo.innerHTML += information[0].substring(0, 40) + '... ';
-                    } else {
-                        teaserInfo.innerHTML += information[1].substring(0, 42) + '... ';
-                    }
-                    teaserInfo.appendChild(showComplete);
+                var titles = data[1];
+                var links = data[3];
+                wikiInfo = '<p><strong>Wikipedia links:</strong><br>';
+                for(var i = 0; i < titles.length && i < 3; i++) {
+                    wikiInfo += '<a href=' + links[i] + '>' + titles[i] + '</a><br>';
                 }
-
-                // Add complete information about the place: text and links
-                for(var i = 0; i < information.length && i < 3; i++) {
-                    if(information[i].indexOf('may refer to') != -1) {
-                        continue;
-                    } else {
-                        completeInfo.innerHTML += '<p>' + information [i] + '</p>';
-                    }
+                wikiInfo += '</p>'
+                if(titles.length == 0) {
+                    wikiInfo = '<p>Wikipedia information is not available for the location.</p>'
                 }
-
-                completeInfo.innerHTML += '<strong>Wikipedia links:</strong><br>';
-                for (var j = 0; j < articles.length && j < 3; j++) {
-                    var url = 'http://en.wikipedia.org/wiki/'+ articles[j];
-                    completeInfo.innerHTML += '<a href="' + url + '">'+ articles[j] + '</a><br>';
-
-                }
-                completeInfo.innerHTML += '<br>';
-
-                completeInfo.appendChild(hideComplete);
-
-
-                // Hide and show complete information from Wikipedia
-                showComplete.addEventListener('click', function () {
-                    teaserInfo.style.display = 'none';
-                    completeInfo.style.display = 'block';
-                });
-
-                hideComplete.addEventListener('click', function () {
-                    teaserInfo.style.display = 'block';
-                    completeInfo.style.display = 'none';
-                });
-
-
-                completeInfo.style.display = 'none';
-                wikiElem.append(teaserInfo);
-                wikiElem.append(completeInfo);
-                wikiInfo.append(wikiElem);
+                streetViewService.getPanoramaByLocation(marker.position, 50, getStreetView);
             }
         });
 
@@ -265,7 +212,7 @@ function getStreetView(data, status) {
         var heading = google.maps.geometry.spherical.computeHeading(
             nearStreetViewLocation, chosenMarker.position
         );
-        infowindow.setContent('<h5>' + chosenMarker.title + '</h5><div class="wiki-info"></div><div id="pano"></div>');
+        infowindow.setContent('<h5>' + chosenMarker.title + '</h5>' + wikiInfo + '<div class="wiki-info"></div><div id="pano"></div>');
         var panoramaOptions = {
             position: nearStreetViewLocation,
             pov: {
@@ -275,7 +222,7 @@ function getStreetView(data, status) {
         };
         var panorama = new google.maps.StreetViewPanorama(document.querySelector('#pano'), panoramaOptions);
     } else {
-        infowindow.setContent('<h5>' + chosenMarker.title + '</h5><div class="wiki-info"></div><div>No Street View Found</div>');
+        infowindow.setContent('<h5>' + chosenMarker.title + '</h5>' + wikiInfo + '<div class="wiki-info"></div><div>No Street View Found</div>');
     }
 }
 
