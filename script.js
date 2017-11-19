@@ -175,8 +175,9 @@ function populateInfoWindow(marker, infowindow) {
         var wikiUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=' + marker.title + '&callback=wikiCallback';
         $.ajax({
             url: wikiUrl,
-            dataType: 'jsonp',
-            success: function(data) {
+            dataType: 'jsonp'
+            })
+            .done(function(data) {
                 var titles = data[1];
                 var links = data[3];
                 wikiInfo = '<p><strong>Wikipedia links:</strong><br>';
@@ -185,16 +186,15 @@ function populateInfoWindow(marker, infowindow) {
                 }
                 wikiInfo += '</p>';
                 if(titles.length === 0) {
-                    wikiInfo = '<p>Wikipedia information is not available for the location.</p>';
+                    wikiInfo = '<p>Wikipedia information is not available for this location.</p>';
                 }
                 streetViewService.getPanoramaByLocation(marker.position, 50, getStreetView);
-            },
-            error: function (xhr, status) {
+            })
+            .fail(function (xhr, status) {
                 wikiInfo = '<p>Wikipedia service is not available.</p>';
                 streetViewService.getPanoramaByLocation(marker.position, 50, getStreetView);
                 console.log('Wikipedia API error: ' + status + ' ' + xhr.status);
-            }
-        });
+            });
 
         streetViewService.getPanoramaByLocation(marker.position, 50, getStreetView);
 
