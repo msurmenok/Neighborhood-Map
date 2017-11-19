@@ -1,4 +1,4 @@
-// Array of places in Redwood City, CA
+// Array of places in Bay Area
 var places = [
     {
         title: 'Palace Of Fine Arts',
@@ -75,7 +75,8 @@ var places = [
 
 places = places.sort(function(a,b) {return (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0);});
 
-// Google Map
+
+// Google Map API
 var map;
 var markers = [];
 var infowindow;
@@ -84,10 +85,6 @@ var wikiInfo;
 
 var pinIcon;
 var pinIconChosen;
-
-// Wikipedia
-//var wikiUrl;
-
 
 
 function initMap() {
@@ -116,12 +113,6 @@ function initMap() {
     infowindow = new google.maps.InfoWindow();
 
     createMarkers(places);
-}
-
-
-function mapError(event) {
-    console.log('Google Maps API Error');
-    console.log(event);
 }
 
 
@@ -154,18 +145,19 @@ function wrapMarkAsChosen() {
     return markAsChosen(this);
 }
 
+
 function wrapMarkAsUnchosen() {
     return markAsUnchosen(this);
 }
+
 
 function wrapPopulateInfoWindow() {
     return populateInfoWindow(this, infowindow);
 }
 
+
 // Populate infowindow for specific marker
 // Only one infowindow at a time
-
-
 function populateInfoWindow(marker, infowindow) {
     chosenMarker = marker;
     if(infowindow.marker != marker) {
@@ -277,10 +269,19 @@ function findMarkerByTitle(title) {
 }
 
 
+
+function mapError(event) {
+    console.log('Google Maps API Error');
+    console.log(event);
+    model.mapErrorDetails('<span>Google Map is not available</span>');
+}
+
+
 // Knockout JS
 function AppViewModel() {
     this.filter = ko.observable("");
 
+    // Filter an array of places by name
     this.filteredItems = ko.computed(function () {
         var filter = this.filter().toLowerCase();
         if (!filter) {
@@ -295,10 +296,14 @@ function AppViewModel() {
         }
     }, this);
 
+    // Listen if an array of places has changed
     this.filteredItems.subscribe(function(filteredPlaces) {
         createMarkers(filteredPlaces);
     });
 
+
+    // Handle Google Map error
+    this.mapErrorDetails = ko.observable("");
 
     // Hover over markers
     this.goOverMarker = function (text) {
@@ -319,4 +324,5 @@ function AppViewModel() {
 
 
 // Activates knockout.js
-ko.applyBindings(new AppViewModel());
+var model = new AppViewModel();
+ko.applyBindings(model);
